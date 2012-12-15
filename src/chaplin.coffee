@@ -2,6 +2,7 @@ define [
   'chaplin/application'
   'chaplin/mediator'
   'chaplin/dispatcher'
+  'chaplin/composer'
   'chaplin/controllers/controller'
   'chaplin/models/collection'
   'chaplin/models/model'
@@ -15,11 +16,12 @@ define [
   'chaplin/lib/support'
   'chaplin/lib/sync_machine'
   'chaplin/lib/utils'
-], (Application, mediator, Dispatcher, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, Delayer, EventBroker, support, SyncMachine, utils) ->
+], (Application, mediator, Dispatcher, Composer, Controller, Collection, Model, Layout, View, CollectionView, Route, Router, Delayer, EventBroker, support, SyncMachine, utils) ->
   {
     Application,
     mediator,
     Dispatcher,
+    Composer,
     Controller,
     Collection,
     Model,

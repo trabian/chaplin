@@ -36,12 +36,40 @@ define [
     # Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.
     containerMethod: 'append'
 
+    # Regions
+    # -------
+
+    # Region registration; regions are in essence named selectors that aim
+    # to decouple the view from its parent.
+
+    # To register regions implement this method in your class as follows:
+    # regions: (region) ->
+    #   region 'name', '.class'
+    #   region 'name', '#id'
+
+    regions: null
+
+    # Region application is the reverse; you're specifying that this view
+    # will be inserted into the DOM at the named region. Error thrown if
+    # the region is unregistered at the time of initialization.
+    # Set the region name on your derived class or pass it into the
+    # constructor in controller action.
+
+    region: null
+
     # Subviews
     # --------
 
     # List of subviews
     subviews: null
     subviewsByName: null
+
+    # State
+    # -----
+
+    # A view is `stale` when it has been previously composed by the last
+    # route but has not yet been composed by the current route.
+    stale: false
 
     constructor: (options) ->
       # Wrap `initialize` so `afterInitialize` is called afterwards
@@ -58,7 +86,7 @@ define [
 
       # Copy some options to instance properties
       if options
-        _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod']
+        _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod', 'region']
 
       # Call Backbone’s constructor
       super
@@ -385,6 +413,9 @@ define [
 
       throw new Error('Your `initialize` method must include a super call to
         Chaplin `initialize`') unless @subviews?
+
+      # Let everyone know we're being disposed
+      @publishEvent 'view:dispose', this
 
       # Dispose subviews
       subview.dispose() for subview in @subviews

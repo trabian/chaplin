@@ -2,11 +2,12 @@ define [
   'underscore'
   'chaplin/mediator'
   'chaplin/application'
+  'chaplin/composer'
   'chaplin/lib/router'
   'chaplin/dispatcher'
   'chaplin/views/layout'
   'chaplin/lib/event_broker'
-], (_, mediator, Application, Router, Dispatcher, Layout, EventBroker) ->
+], (_, mediator, Application, Composer, Router, Dispatcher, Layout, EventBroker) ->
   'use strict'
 
   describe 'Application', ->
@@ -30,6 +31,11 @@ define [
       expect(app.initDispatcher).to.be.a 'function'
       app.initDispatcher()
       expect(app.dispatcher).to.be.a Dispatcher
+
+    it 'should create a composer', ->
+      expect(app.initComposer).to.be.a 'function'
+      app.initComposer()
+      expect(app.composer).to.be.a Composer
 
     it 'should create a layout', ->
       expect(app.initLayout).to.be.a 'function'
@@ -58,7 +64,7 @@ define [
       expect(app.dispose).to.be.a 'function'
       app.dispose()
 
-      for prop in ['dispatcher', 'layout', 'router']
+      for prop in ['dispatcher', 'layout', 'router', 'composer']
         expect(app).not.to.have.own.property prop
 
       expect(app.disposed).to.be true
