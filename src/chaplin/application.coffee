@@ -4,8 +4,8 @@ define [
   'chaplin/dispatcher'
   'chaplin/views/layout'
   'chaplin/lib/router'
-  'chaplin/lib/event_broker'
   'chaplin/composer'
+  'chaplin/lib/event_broker'
 ], (Backbone, mediator, Dispatcher, Layout, Router, Composer, EventBroker) ->
   'use strict'
 

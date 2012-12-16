@@ -86,7 +86,12 @@ define [
 
       # Copy some options to instance properties
       if options
-        _(this).extend _.pick options, ['autoRender', 'container', 'containerMethod', 'region']
+        _(this).extend _.pick options, [
+          'autoRender',
+          'container',
+          'containerMethod',
+          'region'
+        ]
 
       # Call Backbone’s constructor
       super
@@ -104,6 +109,12 @@ define [
       # If the model is disposed, automatically dispose the associated view
       if @model or @collection
         @modelBind 'dispose', @dispose
+
+      # Attempt to bind this view to its named region
+      @publishEvent '!region:show', this.region, this if @region?
+
+      # Register all exposed regions
+      @publishEvent '!region:register', this
 
       # Call `afterInitialize` if `initialize` was not wrapped
       unless @initializeIsWrapped

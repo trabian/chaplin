@@ -52,7 +52,7 @@ define [
       @subscribeEvent 'startupController', @showNewView
       @subscribeEvent '!adjustTitle', @adjustTitle
 
-      @subscribeEvent '!region:apply', @applyRegion
+      @subscribeEvent '!region:show', @showRegion
       @subscribeEvent '!region:register', @registerRegions
       @subscribeEvent 'view:dispose', @unregisterRegions
 
@@ -192,7 +192,7 @@ define [
 
     # When views are instantiated and request for a region assignment;
     # attempt to fulfill it.
-    applyRegion: (name, instance) ->
+    showRegion: (name, instance) ->
       # Find an appropriate region
       region = _.find @regions, (region) ->
         region.name is name and
