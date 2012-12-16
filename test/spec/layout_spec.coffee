@@ -232,14 +232,14 @@ define [
 
     it 'should allow for views to register regions', ->
       view1 = class Test1View extends View
-        regions: (region) ->
-          region 'test1', '#test1'
-          region 'test2', '#test2'
+        regions:
+          '#test1': 'test1'
+          '#test2': 'test2'
 
       view2 = class Test2View extends View
-        regions: (region) ->
-          region 'test3', '#test1'
-          region 'test4', '#test2'
+        regions:
+          '#test1': 'test3'
+          '#test2': 'test4'
 
       spy = sinon.spy(layout, 'registerRegion')
       instance1 = new Test1View()
@@ -265,9 +265,9 @@ define [
 
     it 'should dispose of regions when a view is disposed', ->
       view = class TestView extends View
-        regions: (region) ->
-          region 'test1', '#test1'
-          region 'test2', '#test2'
+        regions:
+          '#test1': 'test1'
+          '#test2': 'test2'
 
       instance = new TestView()
       instance.dispose()
@@ -276,14 +276,14 @@ define [
     it 'should only dispose of regions a view registered when
         it is disposed', ->
       view1 = class Test1View extends View
-        regions: (region) ->
-          region 'test1', '#test1'
-          region 'test2', '#test2'
+        regions:
+          '#test1': 'test1'
+          '#test2': 'test2'
 
       view2 = class Test2View extends View
-        regions: (region) ->
-          region 'test3', '#test1'
-          region 'test4', '#test2'
+        regions:
+          '#test1': 'test3'
+          '#test2': 'test4'
 
       instance1 = new Test1View()
       instance2 = new Test2View()
@@ -296,9 +296,9 @@ define [
 
     it 'should allow for views to be applied to regions', ->
       view1 = class Test1View extends View
-        regions: (region) ->
-          region 'test1', '#test1'
-          region 'test2', '#test2'
+        regions:
+          '#test1': 'test1'
+          '#test2': 'test2'
 
       view2 = class Test2View extends View
 
@@ -311,14 +311,14 @@ define [
 
     it 'should apply regions in the order they were registered', ->
       view1 = class Test1View extends View
-        regions: (region) ->
-          region 'test1', '#test1'
-          region 'test2', '#test2'
+        regions:
+          '#test1': 'test1'
+          '#test2': 'test2'
 
       view2 = class Test2View extends View
-        regions: (region) ->
-          region 'test1', '#test1'
-          region 'test2', '#test5'
+        regions:
+          '#test1': 'test1'
+          '#test5': 'test2'
 
       view3 = class Test3View extends View
 
@@ -333,14 +333,14 @@ define [
 
     it 'should only apply regions from non-stale views', ->
       view1 = class Test1View extends View
-        regions: (region) ->
-          region 'test1', '#test1'
-          region 'test2', '#test2'
+        regions:
+          '#test1': 'test1'
+          '#test2': 'test2'
 
       view2 = class Test2View extends View
-        regions: (region) ->
-          region 'test1', '#test1'
-          region 'test2', '#test5'
+        regions:
+          '#test1': 'test1'
+          '#test5': 'test2'
 
       view3 = class Test3View extends View
 

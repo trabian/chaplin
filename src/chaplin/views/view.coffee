@@ -41,12 +41,11 @@ define [
 
     # Region registration; regions are in essence named selectors that aim
     # to decouple the view from its parent.
-
-    # To register regions implement this method in your class as follows:
-    # regions: (region) ->
-    #   region 'name', '.class'
-    #   region 'name', '#id'
-
+    #
+    # This functions close to the declarative events hash; use as follows:
+    # regions:
+    #   '.class': 'region'
+    #   '#id': 'region'
     regions: null
 
     # Region application is the reverse; you're specifying that this view
@@ -54,7 +53,6 @@ define [
     # the region is unregistered at the time of initialization.
     # Set the region name on your derived class or pass it into the
     # constructor in controller action.
-
     region: null
 
     # Subviews
@@ -110,11 +108,11 @@ define [
       if @model or @collection
         @modelBind 'dispose', @dispose
 
-      # Attempt to bind this view to its named region
-      @publishEvent '!region:show', this.region, this if @region?
+      # Attempt to bind this view to its named region.
+      @publishEvent '!region:show', @region, this if @region?
 
-      # Register all exposed regions
-      @publishEvent '!region:register', this
+      # Register all exposed regions.
+      @publishEvent '!region:register', this if @regions?
 
       # Call `afterInitialize` if `initialize` was not wrapped
       unless @initializeIsWrapped

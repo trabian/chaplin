@@ -175,17 +175,34 @@ define [
     # Region management
     # -----------------
 
-    # Registering one region; namespaced by cid
+    # Registering one region bound to a view.
     registerRegion: (instance, name, selector) =>
+      # Remove the region if there was already one registered perhaps by
+      # a base class.
+      @unregisterRegion instance, name
+
+      # Place this region registration into the regions array.
       @regions.unshift {instance, name, selector}
 
-    # Triggered by view; passed in the region registration method
+    # Triggered by view; passed in the regions hash.
     # Simply register all regions exposed by it
     registerRegions: (instance) ->
-      if instance.regions?
-        instance.regions (params...) => @registerRegion instance, params...
+      # Regions can be be extended by subclasses, so we need to check the
+      # whole prototype chain for matching regions. Regions registered by the
+      # more-derived class overwrites the region registered by the less-derived
+      # class.
+      prototypeChain = utils.getPrototypeChain instance
+      for prototype in prototypeChain.reverse()
+        # Iterate over each declared region and its selector.
+        for selector, name of prototype.regions
+          @registerRegion instance, name, selector
 
-    # When views are disposed; remove all their registered regions
+    # Unregisters a specific named region from a view.
+    unregisterRegion: (instance, name) ->
+      @regions = _(@regions).reject (region) ->
+        region.instance.cid is instance.cid and region.name is name
+
+    # When views are disposed; remove all their registered regions.
     unregisterRegions: (instance) ->
       @regions = _(@regions).reject (region) ->
         region.instance.cid is instance.cid
@@ -195,8 +212,7 @@ define [
     showRegion: (name, instance) ->
       # Find an appropriate region
       region = _.find @regions, (region) ->
-        region.name is name and
-        not region.instance.stale
+        region.name is name and not region.instance.stale
 
       # Assert that we got a valid region
       if _.isUndefined region
