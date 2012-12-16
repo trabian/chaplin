@@ -275,6 +275,21 @@ define [
         else
           $el.text value
 
+    # Region management
+    # -----------------
+
+    # Functionally register a single region.
+    registerRegion: (selector, name) ->
+      @publishEvent '!region:register', this, name, selector
+
+    # Functionally unregister a single region by name.
+    unregisterRegion: (name) ->
+      @publishEvent '!region:unregister', this, name
+
+    # Unregister all regions; called upon view disposal.
+    unregisterAllRegions: ->
+      @publishEvent '!region:unregister', this
+
     # Subviews
     # --------
 
@@ -423,8 +438,8 @@ define [
       throw new Error('Your `initialize` method must include a super call to
         Chaplin `initialize`') unless @subviews?
 
-      # Let everyone know we're being disposed
-      @publishEvent 'view:dispose', this
+      # Unregister all regions
+      @unregisterAllRegions()
 
       # Dispose subviews
       subview.dispose() for subview in @subviews

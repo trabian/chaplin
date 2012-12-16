@@ -53,8 +53,8 @@ define [
       @subscribeEvent '!adjustTitle', @adjustTitle
 
       @subscribeEvent '!region:show', @showRegion
-      @subscribeEvent '!region:register', @registerRegions
-      @subscribeEvent 'view:dispose', @unregisterRegions
+      @subscribeEvent '!region:register', @registerRegionHandler
+      @subscribeEvent '!region:unregister', @unregisterRegionHandler
 
       # Set the app link routing
       if @settings.routeLinks
@@ -175,8 +175,20 @@ define [
     # Region management
     # -----------------
 
+    # Handler for `!region:register`.
+    registerRegionHandler: (params...) ->
+      if arguments.length is 1
+        # A single parameter is assumed to be the view instance; register all
+        # regions exposed.
+        @registerRegions params...
+
+      else
+        # Else we're expecting all three parameters and the intent to register
+        # a single region.
+        @registerRegion params...
+
     # Registering one region bound to a view.
-    registerRegion: (instance, name, selector) =>
+    registerRegion: (instance, name, selector) ->
       # Remove the region if there was already one registered perhaps by
       # a base class.
       @unregisterRegion instance, name
@@ -196,6 +208,18 @@ define [
         # Iterate over each declared region and its selector.
         for selector, name of prototype.regions
           @registerRegion instance, name, selector
+
+    # Handler for `!region:unregister`.
+    unregisterRegionHandler: (params...) ->
+      if arguments.length is 1
+        # A single parameter is assumed to be the view instance; unregister all
+        # regions bound to the view.
+        @unregisterRegions params...
+
+      else
+        # Else we're expecting both parameters and the intent to unregister
+        # a single named region.
+        @unregisterRegion params...
 
     # Unregisters a specific named region from a view.
     unregisterRegion: (instance, name) ->

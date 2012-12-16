@@ -78,15 +78,11 @@ define [
       mediator.publish 'startupController'
 
     it 'should dispose a compose view if it is not re-composed', ->
-      spy = sinon.spy()
-      mediator.subscribe 'view:dispose', spy
-
       mediator.publish '!composer:compose', TestView1
       expect(composer.compositions.length).to.be 1
 
       toBeDisposed = composer.compositions[0].view
       mediator.publish 'startupController'
-      expect(spy).was.notCalled()
 
       mediator.publish '!composer:compose', TestView2
 
@@ -95,8 +91,6 @@ define [
 
       expect(composer.compositions.length).to.be 1
       expect(composer.compositions[0].view).to.be.a TestView2
-
-      expect(spy).was.calledWith toBeDisposed
 
     # composing with the long form
     # -----------------------------
@@ -130,7 +124,6 @@ define [
       view2 = null
       spy = sinon.spy()
 
-      mediator.subscribe 'view:dispose', spy
       mediator.publish '!composer:compose',
         compose: ->
           dagger: view1 = new TestView1()
@@ -150,11 +143,9 @@ define [
       mediator.publish 'startupController'
       expect(composer.compositions.length).to.be 1
       expect(composer.compositions[0].frozen).to.be.a TestView2
-      expect(spy).was.calledWith view1
 
       mediator.publish 'startupController'
       expect(composer.compositions.length).to.be 0
-      expect(spy).was.calledWith view2
 
     # disposal
     # --------
