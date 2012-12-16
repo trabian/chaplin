@@ -17,6 +17,7 @@ Also, `@model.bind()` should not be used directly. Chaplin has `@modelBind()` wh
 - Robust and memory-safe model binding
 - Automatic rendering and appending to the DOM
 - Creating subviews
+- Registering regions
 - Disposal which cleans up all subviews, model bindings and Pub/Sub events
 
 <a id="initialize"></a>
@@ -42,7 +43,7 @@ Also, `@model.bind()` should not be used directly. Chaplin has `@modelBind()` wh
   Your application should provide a standard way of rendering DOM
   nodes by creating HTML from templates and template data. Chaplin
   provides `getTemplateFunction` and `getTemplateData` for this purpose.
-  
+
   Set [`autorender`](#autoRender) to true to enable rendering upon
   View instantiation. Will automatically append to a [`container`](#container)
   if one is set, although the method of appending can be overriden
@@ -115,7 +116,7 @@ getTemplateData: ->
   class heirarchies. In the default implementation, only `initialize` and `render` are
   wrapped, giving the View `afterInitialize` and `afterRender` methods that are called
   after the prototype chain has completed for their respective heirarchy.
-  
+
   `afterInitialize` calls `render` if `autoRender` is true, and `afterRender` attaches
   the View to its `container` element.
 
@@ -125,32 +126,32 @@ getTemplateData: ->
 <a id="autoRender"></a>
 ### autoRender
 * **Boolean, default: false**
-  
+
   Specifies whether the the View's `render` method should be called when
   a view is instantiated.
 
 <a id="container"></a>
 ### container
 * **jQuery object, selector string, or element, default: null**
-  
+
   A selector for the View's containg element into which the `$el`
   will be rendered. The container must exist in the DOM.
-  
+
   Set this property in a derived class to specify the container element.
   Normally this is a selector string but it might also be an element or
   jQuery object. View is automatically inserted into the container when
   it’s rendered (in the `afterRender` method). As an alternative you
   might pass a `container` option to the constructor.
-  
+
   A container is often an empty element within a parent view.
 
 <a id="containerMethod"></a>
 ### containerMethod
 * **String, jQuery object method (default: 'append')**
-  
+
   Method which is used for adding the view to the DOM via the `container`
   element. (Like jQuery’s `html`, `prepend`, `append`, `after`, `before` etc.)
-  
+
 ## Event delegation
 <a id="delegate"></a>
 ### delegate(eventType, [selector], handler)
@@ -233,16 +234,108 @@ class LikeView extends View
 @pass 'author', 'h2.author-name'
 ```
 
+## Regions
+
+Provides a means to give canonical names to selectors in the view. Instead of
+binding a view to `#page .container > .sidebar` (via the container) you would
+bind it to the declared region `sidebar` which is registered by the view that
+contained `#page .container > .sidebar`. This decouples views from those that
+nests them. It allows for layouts to be drastically changed without changing
+the template.
+
+### region
+
+This is the region that the view will be bound to. This property is not
+meant to be set on the prototype -- it is meant to be passed in as part
+of the options hash.
+
+Both of the following code snippets will bind the view `MyView` to the
+declared region `sidebar`.
+
+This one sets the region directly on the prototype:
+
+```coffeescript
+# myview.coffee
+class MyView extends Chaplin.View
+  region: 'sidebar'
+
+# my_controller.coffee
+# [...] inside action method
+@view = new MyView()
+```
+
+And this one passes in the value of region to the view constructor:
+
+```coffeescript
+# myview.coffee
+class MyView extends Chaplin.View
+
+# my_controller.coffee
+# [...] inside action method
+@view = new MyView {region: 'sidebar'}
+```
+
+However the latter case allows the controller (through whatever logic) decide
+where to place the view.
+
+### regions
+
+Region registration hash that works much like the declarative events hash
+present in Backbone.
+
+The following snippet will register the named regions `sidebar` and `body` and
+bind them to their respective selectors.
+
+```coffeescript
+# myview.coffee
+class MyView extends Chaplin.View
+  regions:
+    '#page .container > .sidebar': 'sidebar'
+    '#page .container > .content': 'body'
+```
+
+When the view is initialzied the regions hashes of all base classes are
+gathered and registered as well. When two views in an inheritance tree
+both register a region of the same name, the selector of the most-derived view
+is used.
+
+### registerRegion(selector, name)
+* **String selector**,
+* **String name**
+
+Functionally registers a region exactly the same as if it were in the regions
+hash. Meant to be called in the `initialize` method as the following code
+snippet (which is identical to the previous one using the `regions` hash).
+
+```coffeescript
+class MyView extends Chaplin.View
+  initialize: ->
+    super
+    @registerRegion '#page .container > .sidebar', 'sidebar'
+    @registerRegion '#page .container > .content', 'body'
+```
+
+### unregisterRegion(name)
+* **String name**
+
+Removes the named region as if it was not registered. Does nothing if
+there is no region named `name`.
+
+### unregisterAllRegions()
+
+Removes all regions registered by this view, automatically called on
+`View#dispose`.
+
 
 ## Subviews
 
 ### subview(name, [view])
 * **String name**,
 * **View view (when setting the subview)**
-  
+
   Add a subview to the View to be referenced by `name`. Calling with just the
   `name` argument will return the subview associated with that `name`.
-  
+
   Subviews are not automatically rendered. This is often done in an
   inheriting view (i.e. in [CollectionView](./chaplin.collection_view.md)
   or your own PageView base class).
