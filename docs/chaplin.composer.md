@@ -97,3 +97,37 @@ route 'login'
 # 'views/header' is disposed
 # 'views/site' is disposed
 ```
+
+
+## Long form
+
+By default, when a controller requests a view to be composed, the composer
+checks if the view instance exists and the options hash is equal. If that is
+true the view is destroyed and composed.
+
+By default, the compose method only allows for composing views.
+
+The following example shows anoter way to use the compose method to allow for
+just about anything. The check method should return true when it wishes
+the composition to be disposed and the compose method to be called.
+The composer will track and ensure proper disposal of whatever is returned from
+the compose method (be it a view or an object with properties that have
+dispose methods).
+
+```coffeescript
+  @compose
+    compose: ->
+      composition = {}
+      composition.model = new Model()
+      composition.model.id = 42
+
+      composition.view = new View
+        model: composition.model
+
+      composition.model.fetch()
+      composition
+
+    check: (composition) ->
+      composition.model.id is 42 and
+      typeof composition.view is typeof View
+```
