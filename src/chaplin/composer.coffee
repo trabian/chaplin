@@ -61,12 +61,20 @@ define [
       @subscribeEvent 'startupController', @onStartupController
 
     perform: (type, options) ->
-      # Perform the composition; this is the function
+      # Build the composition; this is the function
       # that is overidden when the `compose` option is passed to the
       # compose function
-      type: type
-      params: options.params
-      view: new type options
+      composition =
+        type: type
+        params: options.params
+        view: new type options
+
+      # If the view is not automatically rendered; render it
+      # The composing controller has no idea if and when it should render
+      composition.view.render() unless composition.view.autoRender
+
+      # Return our composition
+      composition
 
     stale: (composition, value) ->
       # Set the stale property on the composition
