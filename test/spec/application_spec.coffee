@@ -11,8 +11,6 @@ define [
   'use strict'
 
   describe 'Application', ->
-    #console.debug 'Application spec'
-
     app = new Application()
 
     it 'should be a simple object', ->
@@ -51,7 +49,7 @@ define [
 
       expect(app.initRouter).to.be.a 'function'
       expect(app.initRouter.length).to.be 2
-      app.initRouter routes, root: '/'
+      app.initRouter routes, root: '/', pushState: false
 
       expect(app.router).to.be.a Router
       expect(routesCalled).to.be true

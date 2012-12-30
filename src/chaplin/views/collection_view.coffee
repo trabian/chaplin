@@ -108,12 +108,26 @@ define [
 
     # Binding of collection listeners
     addCollectionListeners: ->
-      @modelBind 'add',    @itemAdded
-      @modelBind 'remove', @itemRemoved
-      @modelBind 'reset',  @itemsResetted
+      @listenTo @collection, 'add',    @itemAdded
+      @listenTo @collection, 'remove', @itemRemoved
+      @listenTo @collection, 'reset sort',  @itemsResetted
 
     # Rendering
     # ---------
+
+    # Override View#getTemplateData, don’t serialize collection items here.
+    getTemplateData: ->
+      templateData = {length: @collection.length}
+
+      # If the collection is a Deferred, add a `resolved` flag
+      if typeof @collection.state is 'function'
+        templateData.resolved = @collection.state() is 'resolved'
+
+      # If the collection is a SyncMachine, add a `synced` flag
+      if typeof @collection.isSynced is 'function'
+        templateData.synced = @collection.isSynced()
+
+      templateData
 
     # In contrast to normal views, a template is not mandatory
     # for CollectionViews. Provide an empty `getTemplateFunction`.
@@ -160,7 +174,7 @@ define [
       @on 'visibilityChange', @showHideFallback
 
       # Listen for sync events on the collection
-      @modelBind 'syncStateChange', @showHideFallback
+      @listenTo @collection, 'syncStateChange', @showHideFallback
 
       # Set visibility initially
       @showHideFallback()
@@ -190,7 +204,7 @@ define [
       @$loading = @$(@loadingSelector)
 
       # Listen for sync events on the collection
-      @modelBind 'syncStateChange', @showHideLoadingIndicator
+      @listenTo @collection, 'syncStateChange', @showHideLoadingIndicator
 
       # Set visibility initially
       @showHideLoadingIndicator()

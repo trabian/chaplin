@@ -103,10 +103,10 @@ define [
       @subviews = []
       @subviewsByName = {}
 
-      # Listen for disposal of the model
+      # Listen for disposal of the model or collection.
       # If the model is disposed, automatically dispose the associated view
-      if @model or @collection
-        @modelBind 'dispose', @dispose
+      @listenTo @model, 'dispose', @dispose if @model
+      @listenTo @collection, 'dispose', @dispose if @collection
 
       # Attempt to bind this view to its named region.
       @publishEvent '!region:show', @region, this if @region?
@@ -212,63 +212,13 @@ define [
     undelegate: ->
       @$el.unbind ".delegate#{@cid}"
 
-    # Model binding
-    # The following implementation resembles EventBroker
-    # --------------------------------------------------
-
-    # Bind to a model event
-    modelBind: (type, handler) ->
-      if typeof type isnt 'string'
-        throw new TypeError 'View#modelBind: ' +
-          'type must be a string'
-      if typeof handler isnt 'function'
-        throw new TypeError 'View#modelBind: ' +
-          'handler argument must be function'
-
-      # Get model/collection reference
-      modelOrCollection = @model or @collection
-      unless modelOrCollection
-        throw new TypeError 'View#modelBind: no model or collection set'
-
-      # Ensure that a handler isn’t registered twice
-      modelOrCollection.off type, handler, this
-
-      # Register model handler, force context to the view
-      modelOrCollection.on type, handler, this
-
-    # Unbind from a model event
-
-    modelUnbind: (type, handler) ->
-      if typeof type isnt 'string'
-        throw new TypeError 'View#modelUnbind: ' +
-          'type argument must be a string'
-      if typeof handler isnt 'function'
-        throw new TypeError 'View#modelUnbind: ' +
-          'handler argument must be a function'
-
-      # Get model/collection reference
-      modelOrCollection = @model or @collection
-      return unless modelOrCollection
-
-      # Remove model handler
-      modelOrCollection.off type, handler
-
-    # Unbind all recorded model event handlers
-    modelUnbindAll: ->
-      # Get model/collection reference
-      modelOrCollection = @model or @collection
-      return unless modelOrCollection
-
-      # Remove all handlers with a context of this view
-      modelOrCollection.off null, null, this
-
     # Setup a simple one-way model-view binding
     # Pass changed attribute values to specific elements in the view
     # For form controls, the value is changed, otherwise the element
     # text content is set to the model attribute value.
     # Example: @pass 'attribute', '.selector'
     pass: (attribute, selector) ->
-      @modelBind "change:#{attribute}", (model, value) =>
+      @listenTo @model, "change:#{attribute}", (model, value) =>
         $el = @$(selector)
         if $el.is('input, textarea, select, button')
           $el.val value
@@ -339,27 +289,25 @@ define [
     # Get the model/collection data for the templating function
     # Uses optimized Chaplin serialization if available.
     getTemplateData: ->
-      if @model
-        templateData = if @model instanceof Model
+      templateData = if @model
+        if @model instanceof Model
           @model.serialize()
         else
           utils.beget @model.attributes
       else if @collection
-        # Collection: Serialize all models
-        if @collection instanceof Collection
-          items = @collection.serialize()
+        # Collection: Serialize all models.
+        items = if @collection instanceof Collection
+          @collection.serialize()
         else
-          items = []
-          for model in @collection.models
-            items.push utils.beget(model.attributes)
-        templateData = {items}
+          @collection.map (model) ->
+            utils.beget model.attributes
+        {items}
       else
-        # Empty object
-        templateData = {}
+        # Empty object.
+        {}
 
       modelOrCollection = @model or @collection
       if modelOrCollection
-
         # If the model/collection is a Deferred, add a `resolved` flag,
         # but only if it’s not present yet
         if typeof modelOrCollection.state is 'function' and
@@ -447,8 +395,8 @@ define [
       # Unbind handlers of global events
       @unsubscribeAllEvents()
 
-      # Unbind all model handlers
-      @modelUnbindAll()
+      # Unbind all referenced handlers
+      @stopListening()
 
       # Remove all event handlers on this module
       @off()

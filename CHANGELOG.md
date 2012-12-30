@@ -1,19 +1,42 @@
-# Chaplin 0.6.0 (unreleased)
-* Added support for reversing & naming of routes.
-* Added new global `!router:routeByName` event, which allows to
-navigate to some route by its reverse name.
-* Added `names` option to `Chaplin.Router#match`, which allows to name
-  route’s regular expression matches.
-* Added Rails-like before action filters to `Controller`s.
-* Moved `Chaplin.View#wrapMethod` to `Chaplin.utils.wrapMethod`.
-* `Chaplin.View#dispose` will now throw an error if `Chaplin.View#initialize`
-  was called without `super`.
+# Chaplin 0.6.0 (December 30, 2012)
+* Updated required Backbone version to 0.9.9+.
+* Improved `Chaplin.Collection`:
+    * Removed `Collection#update` since this function is now provided
+      by Backbone itself. The `deep` option is now called `merge` and it
+      defaults to true.
+* Improved `Chaplin.CollectionView`:
+    * `CollectionView#getTemplateData` no longer returns `items` property,
+    which increases performance.
+* Improved `Chaplin.Controller`:
+    * Added Rails-like before action filters to `Controller`s.
+    * Added `Controller#redirectToRoute` which works like
+      `Controller#redirectTo`, but accepts route name instead of URL.
+    * Added flexible `Controller#adjustTitle` method which sets window title.
+    * Added `Backbone.Events` mix-in.
+    * Removed `Controller#title` and `Controller#historyURL`.
+    * Removed ability of redirecting to standalone controllers and action names
+      in `Controller#redirectTo`.
+* Improved `Chaplin.Router`:
+    * Added support for named routes.
+    * Added new global `!router:routeByName` event, which allows to
+      navigate to some route by its reverse name.
+    * Added new global `!router:reverse` event, which allows to get
+      URL of route by its name.
+    * Added `names` option to `Router#match`, which allows to name
+      route’s regular expression matches.
+    * Removed global `!startupController` event.
+* Improved `Chaplin.View`:
+    * Removed `View#modelBind`, `View#modelUnbind` and `View#modelUnbindAll`,
+      since Backbone now implements superior `Events.listenTo` API.
+    * Chaplin will now fix incorrect inheritance of view DOM events,
+      bound in declarative manner (with `events` hash).
+    * Moved `View#wrapMethod` to `Chaplin.utils.wrapMethod`.
+    * `View#dispose` will now throw an error if
+      `View#initialize` was called without `super`.
 * Router options are now allowed to be passed in many places.
   New signatures are:
     * `!router:route` global event: path, *options*, callback
       (old sig is supported too)
-    * `!startupController` global event:
-      controllerName, action, params, *options*
     * `Dispatcher#matchRoute`: route, params, *options*
     * `Controller#redirectTo`: path or
       (controllerName, action, params, *options*)

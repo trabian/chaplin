@@ -1,16 +1,15 @@
 define [
   'underscore'
+  'backbone'
   'chaplin/mediator'
   'chaplin/lib/event_broker'
   'chaplin/controllers/controller'
   'chaplin/models/model'
   'chaplin/views/view'
-], (_, mediator, EventBroker, Controller, Model, View) ->
+], (_, Backbone, mediator, EventBroker, Controller, Model, View) ->
   'use strict'
 
   describe 'Controller', ->
-    #console.debug 'Controller spec'
-
     controller = null
 
     beforeEach ->
@@ -19,7 +18,11 @@ define [
     afterEach ->
       controller.dispose()
 
-    it 'should mixin a EventBroker', ->
+    it 'should mixin a Backbone.Events', ->
+      for own name, value of Backbone.Events
+        expect(controller[name]).to.be Backbone.Events[name]
+
+    it 'should mixin an EventBroker', ->
       for own name, value of EventBroker
         expect(controller[name]).to.be EventBroker[name]
 

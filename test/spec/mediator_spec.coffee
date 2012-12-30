@@ -7,8 +7,6 @@ define [
   'use strict'
 
   describe 'mediator', ->
-    #console.debug 'mediator spec'
-
     it 'should be a simple object', ->
       expect(mediator).to.be.an 'object'
 
@@ -20,8 +18,7 @@ define [
     it 'should have readonly Pub/Sub methods', ->
       return unless support.propertyDescriptors and
         Object.getOwnPropertyDescriptor
-      methods = ['subscribe', 'unsubscribe', 'publish',
-        'on']
+      methods = ['subscribe', 'unsubscribe', 'publish']
       _(methods).forEach (property) ->
         desc = Object.getOwnPropertyDescriptor(mediator, property)
         expect(desc.enumerable).to.be true
