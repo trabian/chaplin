@@ -81,7 +81,7 @@ define [
 
     compose: (type, options = {}) ->
       # Short form (view-class, ctor-options) or long form ?
-      if arguments.length is 2 or _(type).isFunction()
+      if arguments.length is 2 or typeof type is 'function'
         # Assume short form; apply functions
         options.params = _(options).clone()
         options.compose = => @perform type, options
@@ -93,10 +93,10 @@ define [
         options = type
 
       # Assert for programmer errors
-      unless _(options.compose).isFunction()
+      unless typeof options.compose is 'function'
         throw new Error "options#compose must be defined"
 
-      unless _(options.check).isFunction()
+      unless typeof options.check is 'function'
         throw new Error "options#check must be defined"
 
       # Attempt to find an active composition that matches
@@ -114,7 +114,7 @@ define [
 
     destroy: (composition) ->
       # Dispose of everything that can be disposed
-      for name, item of composition when _(item?.dispose).isFunction()
+      for name, item of composition when typeof item?.dispose is 'function'
         item.dispose()
         delete composition[name]
 
