@@ -304,6 +304,8 @@ define [
           '#test2': 'test2'
 
       view2 = class Test2View extends View
+        autoRender: true
+        getTemplateFunction: -> # Do nothing
 
       instance1 = new Test1View()
       instance2 = new Test2View {region: 'test2'}
@@ -324,6 +326,8 @@ define [
           '#test5': 'test2'
 
       view3 = class Test3View extends View
+        autoRender: true
+        getTemplateFunction: -> # Do nothing
 
       instance1 = new Test1View()
       instance2 = new Test2View()
@@ -346,6 +350,8 @@ define [
           '#test5': 'test2'
 
       view3 = class Test3View extends View
+        autoRender: true
+        getTemplateFunction: -> # Do nothing
 
       instance1 = new Test1View()
       instance2 = new Test2View()

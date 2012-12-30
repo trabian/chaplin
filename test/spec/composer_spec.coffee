@@ -17,10 +17,13 @@ define [
 
     class TestModel extends Model
 
-    class TestView1 extends View
-    class TestView2 extends View
-    class TestView3 extends View
-    class TestView4 extends View
+    class NullView extends View
+      getTemplateFunction: -> # Do nothing
+
+    class TestView1 extends NullView
+    class TestView2 extends NullView
+    class TestView3 extends NullView
+    class TestView4 extends NullView
 
     beforeEach ->
       # Instantiate
