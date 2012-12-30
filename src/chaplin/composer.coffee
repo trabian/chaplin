@@ -77,7 +77,7 @@ define [
         item.stale = value
 
       # Don't bother to return the for loop
-      undefined
+      return
 
     compose: (type, options = {}) ->
       # Short form (view-class, ctor-options) or long form ?
@@ -119,7 +119,7 @@ define [
         delete composition[name]
 
       # Don't bother to return the for loop
-      undefined
+      return
 
     onStartupController: (options) ->
       # Action method is done; perform post-action clean up
