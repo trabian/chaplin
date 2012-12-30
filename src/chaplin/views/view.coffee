@@ -108,9 +108,6 @@ define [
       @listenTo @model, 'dispose', @dispose if @model
       @listenTo @collection, 'dispose', @dispose if @collection
 
-      # Attempt to bind this view to its named region.
-      @publishEvent '!region:show', @region, this if @region?
-
       # Register all exposed regions.
       @publishEvent '!region:register', this if @regions?
 
@@ -368,6 +365,9 @@ define [
 
     # This method is called after a specific `render` of a derived class
     afterRender: ->
+      # Attempt to bind this view to its named region.
+      @publishEvent '!region:show', @region, this if @region?
+
       # Automatically append to DOM if the container element is set
       if @container
         # Append the view to the DOM
