@@ -92,7 +92,6 @@ define [
         # Assume short form; apply functions
         options.params = _(options).clone()
         options.compose = (options) => @perform type, options
-        options.check = -> true  # By default; we never re-compose
 
       else
         # Long form; first argument are the options
@@ -103,7 +102,7 @@ define [
         throw new Error "options#compose must be defined"
 
       unless typeof options.check is 'function'
-        throw new Error "options#check must be defined"
+        options.check = -> true  # By default; we never re-compose
 
       # Attempt to find an active composition that matches
       composition = @compositions[name]
