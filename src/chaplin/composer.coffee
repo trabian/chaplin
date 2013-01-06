@@ -92,7 +92,7 @@ define [
         # Assume short form; apply functions
         options.params = _(options).clone()
         options.compose = (options) => @perform type, options
-        options.check = (options) -> _(@params).isEqual options
+        options.check = -> true  # By default; we never re-compose
 
       else
         # Long form; first argument are the options
