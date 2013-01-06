@@ -47,79 +47,79 @@ define [
     it 'should initialize', ->
       expect(composer.initialize).to.be.a 'function'
       composer.initialize()
-      expect(composer.compositions).to.eql []
+      expect(composer.compositions).to.eql {}
 
     # composing with the short form
     # -----------------------------
 
     it 'should initialize a view when it is composed for the first time', ->
-      mediator.publish '!composer:compose', TestView1
-      expect(composer.compositions.length).to.be 1
-      expect(composer.compositions[0].view).to.be.a TestView1
+      mediator.publish '!composer:compose', 'test1', TestView1
+      expect(_(composer.compositions).keys().length).to.be 1
+      expect(composer.compositions['test1'].view).to.be.a TestView1
       mediator.publish 'startupController'
 
-      mediator.publish '!composer:compose', TestView1
-      mediator.publish '!composer:compose', TestView2
-      expect(composer.compositions.length).to.be 2
-      expect(composer.compositions[1].view).to.be.a TestView2
+      mediator.publish '!composer:compose', 'test1', TestView1
+      mediator.publish '!composer:compose', 'test2', TestView2
+      expect(_(composer.compositions).keys().length).to.be 2
+      expect(composer.compositions['test2'].view).to.be.a TestView2
       mediator.publish 'startupController'
 
     it 'should not initialize a view if it is already composed', ->
-      mediator.publish '!composer:compose', TestView1
-      expect(composer.compositions.length).to.be 1
+      mediator.publish '!composer:compose', 'test1', TestView1
+      expect(_(composer.compositions).keys().length).to.be 1
       mediator.publish 'startupController'
 
-      mediator.publish '!composer:compose', TestView1
-      mediator.publish '!composer:compose', TestView2
-      expect(composer.compositions.length).to.be 2
+      mediator.publish '!composer:compose', 'test1', TestView1
+      mediator.publish '!composer:compose', 'test2', TestView2
+      expect(_(composer.compositions).keys().length).to.be 2
       mediator.publish 'startupController'
 
-      mediator.publish '!composer:compose', TestView1
-      mediator.publish '!composer:compose', TestView2
-      mediator.publish '!composer:compose', TestView1
-      expect(composer.compositions.length).to.be 2
+      mediator.publish '!composer:compose', 'test1', TestView1
+      mediator.publish '!composer:compose', 'test2', TestView2
+      mediator.publish '!composer:compose', 'test1', TestView1
+      expect(_(composer.compositions).keys().length).to.be 2
       mediator.publish 'startupController'
 
     it 'should dispose a compose view if it is not re-composed', ->
-      mediator.publish '!composer:compose', TestView1
-      expect(composer.compositions.length).to.be 1
+      mediator.publish '!composer:compose', 'test1', TestView1
+      expect(_(composer.compositions).keys().length).to.be 1
 
-      toBeDisposed = composer.compositions[0].view
+      toBeDisposed = composer.compositions['test1'].view
       mediator.publish 'startupController'
 
-      mediator.publish '!composer:compose', TestView2
+      mediator.publish '!composer:compose', 'test2', TestView2
 
-      toBeDisposed = composer.compositions[0].view
+      toBeDisposed = composer.compositions['test2'].view
       mediator.publish 'startupController'
 
-      expect(composer.compositions.length).to.be 1
-      expect(composer.compositions[0].view).to.be.a TestView2
+      expect(_(composer.compositions).keys().length).to.be 1
+      expect(composer.compositions['test2'].view).to.be.a TestView2
 
     # composing with the long form
     # -----------------------------
 
     it 'should invoke compose when a view should be composed', ->
-      mediator.publish '!composer:compose',
+      mediator.publish '!composer:compose', 'weird',
         compose: ->
           type: TestView1
           view: new TestView1()
-        check: (x) -> false
+        check: -> false
 
-      expect(composer.compositions.length).to.be 1
-      expect(composer.compositions[0].view).to.be.a TestView1
+      expect(_(composer.compositions).keys().length).to.be 1
+      expect(composer.compositions['weird'].view).to.be.a TestView1
 
       mediator.publish 'startupController'
-      expect(composer.compositions.length).to.be 1
+      expect(_(composer.compositions).keys().length).to.be 1
 
-      mediator.publish '!composer:compose',
+      mediator.publish '!composer:compose', 'weird',
         compose: ->
           type: TestView2
           view: new TestView2()
-        check: (x) -> x.type is TestView2
+        check: -> @type is TestView2
 
       mediator.publish 'startupController'
-      expect(composer.compositions.length).to.be 1
-      expect(composer.compositions[0].view).to.be.a TestView2
+      expect(_(composer.compositions).keys().length).to.be 1
+      expect(composer.compositions['weird'].view).to.be.a TestView2
 
     it 'should dispose the entire composition when necessary', ->
       view1 = null
@@ -127,28 +127,28 @@ define [
       view2 = null
       spy = sinon.spy()
 
-      mediator.publish '!composer:compose',
+      mediator.publish '!composer:compose', 'weird',
         compose: ->
           dagger: view1 = new TestView1()
           dagger2: view12 = new TestView1()
-        check: (x) -> false
+        check: -> false
 
-      expect(composer.compositions.length).to.be 1
-      expect(composer.compositions[0].dagger).to.be.a TestView1
+      expect(_(composer.compositions).keys().length).to.be 1
+      expect(composer.compositions['weird'].dagger).to.be.a TestView1
 
       mediator.publish 'startupController'
-      expect(composer.compositions.length).to.be 1
+      expect(_(composer.compositions).keys().length).to.be 1
 
-      mediator.publish '!composer:compose',
+      mediator.publish '!composer:compose', 'weird',
         compose: -> frozen: view2 = new TestView2()
-        check: (x) -> false
+        check: -> false
 
       mediator.publish 'startupController'
-      expect(composer.compositions.length).to.be 1
-      expect(composer.compositions[0].frozen).to.be.a TestView2
+      expect(_(composer.compositions).keys().length).to.be 1
+      expect(composer.compositions['weird'].frozen).to.be.a TestView2
 
       mediator.publish 'startupController'
-      expect(composer.compositions.length).to.be 0
+      expect(_(composer.compositions).keys().length).to.be 0
 
     # disposal
     # --------

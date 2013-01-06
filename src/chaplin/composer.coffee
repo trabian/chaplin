@@ -54,7 +54,7 @@ define [
 
     initialize: (options = {}) ->
       # initialize collections
-      @compositions = []
+      @compositions = {}
 
       # subscribe to events
       @subscribeEvent '!composer:compose', @compose
@@ -65,7 +65,6 @@ define [
       # that is overidden when the `compose` option is passed to the
       # compose function
       composition =
-        type: type
         params: options.params
         view: new type options
 
@@ -87,15 +86,14 @@ define [
       # Don't bother to return the for loop
       return
 
-    compose: (type, options = {}) ->
+    compose: (name, type, options = {}) ->
       # Short form (view-class, ctor-options) or long form ?
-      if arguments.length is 2 or typeof type is 'function'
+      if arguments.length is 3 or typeof type is 'function'
         # Assume short form; apply functions
         options.params = _(options).clone()
-        options.compose = => @perform type, options
-        options.check = (composition) ->
-          composition.type is type and
-          _(composition.params).isEqual options.params
+        options.compose = (options) => @perform type, options
+        options.check = (options) -> _(@params).isEqual options
+
       else
         # Long form; first argument are the options
         options = type
@@ -108,17 +106,20 @@ define [
         throw new Error "options#check must be defined"
 
       # Attempt to find an active composition that matches
-      composition = _(@compositions).find options.check
+      composition = @compositions[name]
 
-      if composition?
+      if composition isnt undefined and options.check.call(composition, options.params)
         # We have an active composition; declare composition as not stale so
         # that its regions will now be counted
         @stale composition, false
 
       else
+        # Dispose of the old composition
+        @destroy composition if composition isnt undefined
+
         # Perform the composition and append to the list so we can
         # track its lifetime
-        @compositions.push options.compose()
+        @compositions[name] = options.compose options.params
 
     destroy: (composition) ->
       # Dispose of everything that can be disposed
@@ -133,13 +134,12 @@ define [
       # Action method is done; perform post-action clean up
       # Dispose and delete all unactive compositions
       # Declare all active compositions as de-activated
-      @compositions = for composition, index in @compositions
+      for name, composition of @compositions
         if composition.stale
           @destroy composition
-          continue
+          delete @compositions[name]
         else
           @stale composition, true
-          composition
 
     dispose: ->
       return if @disposed
@@ -148,10 +148,7 @@ define [
       @unsubscribeAllEvents()
 
       # Dispose of all compositions and their items (that can be)
-      @destroy composition for composition in @compositions
-
-      # Destroy collections
-      @compositions = @compositions[..]
+      @destroy composition for name, composition of @compositions
 
       # Remove properties
       delete @compositions
