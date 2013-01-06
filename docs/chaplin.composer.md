@@ -44,14 +44,14 @@ class SiteController extends Chaplin.Controller
     '.*': ->
       # Compose the Site view, which is a simple 3-row stacked layout that
       # provides the header, footer, and body regions
-      @compose Site
+      @compose 'site', Site
 
       # Compose the Header view, which binds itself to whatever container
       # is exposed in Site under the header region
-      @compose Header, region: 'header'
+      @compose 'header', Header, region: 'header'
 
       # Likewise for the footer region
-      @compose Footer, region: 'footer'
+      @compose 'footer', Footer, region: 'footer'
 
 
 # controllers/index_controller.coffee
@@ -115,7 +115,7 @@ the compose method (be it a view or an object with properties that have
 dispose methods).
 
 ```coffeescript
-  @compose
+  @compose 'something-strange',
     compose: ->
       composition = {}
       composition.model = new Model()
