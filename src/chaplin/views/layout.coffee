@@ -242,7 +242,7 @@ define [
 
       # Assert that we got a valid region
       if _.isUndefined region
-        throw new Error "No region registed under #{name}"
+        throw new Error "No region registered under #{name}"
 
       # Apply the region selector
       instance.container = region.instance.$el.find(region.selector)
