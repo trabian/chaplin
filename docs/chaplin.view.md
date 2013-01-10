@@ -8,8 +8,7 @@ The templating function is provided by `getTemplateFunction`. The input data for
 
 In addition to Backbone’s `events` hash and the `delegateEvents` method, Chaplin has the `delegate` method to register user input handlers. The declarative `events` hash doesn’t work well for class hierarchies when several `initialize` methods register their own handlers. The programatic approach of `delegate` solves these problems.
 
-Also, `@model.bind()` should not be used directly. Chaplin has `@modelBind()` which forces the handler context so the handler can be removed automatically on view disposal. When using Backbone’s naked `bind`, you have to deregister the handler manually to clear the reference from the model to the view.
-
+Also, `@model.on()` should not be used directly. Backbone has `@listenTo(@model, ...)` which forces the handler context so the handler can be removed automatically on view disposal. When using Backbone’s naked `on`, you have to deregister the handler manually to clear the reference from the model to the view.
 
 ## Features und purpose
 
@@ -212,27 +211,6 @@ class LikeView extends View
 ### modelUnbindAll()
 
   Unbind all recorded model event handlers.
-
-<a id="pass"></a>
-### pass(attribute, selector)
-* **String attribute - corresponds to a field on the model**
-* **String selector - a jQuery selector, object, or element**
-
-  Simple one-way model-view binding (closing the gap on one of the
-  key differences between Backbone and other frameworks like Ember,
-  Angular, etc)
-
-  Pass changed attribute values to specific elements in the view
-  For form controls, the value is changed, otherwise the element
-  text content is set to the model attribute value.
-
-  Useful for form views and other forms of user input, or updating
-  individual parts of the View from changed attributes
-
-```coffeescript
-@pass 'email', 'input[name="email"]'
-@pass 'author', 'h2.author-name'
-```
 
 ## Regions
 

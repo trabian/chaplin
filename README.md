@@ -11,10 +11,10 @@ Chaplin is an architecture for JavaScript applications using the [Backbone.js](h
 * [Key Features](#key-features)
 * [Motivation](#motivation)
 * [Dependencies](#dependencies)
-* [Downloading Chaplin](#downloading-chaplin)
+* [Download Chaplin](#download-chaplin)
 * [Building Chaplin](#building-chaplin)
 * [Running the Tests](#running-the-tests)
-* [Boilerplate](#boilerplate)
+* [Boilerplates](#boilerplates)
 * [Examples](#examples)
 * [Documentation](#documentation)
 * [The Cast](https://github.com/chaplinjs/chaplin/blob/master/AUTHORS.md#the-cast)
@@ -65,8 +65,33 @@ Chaplin depends on the following libraries:
 
 If you’ll be using AMD version, you will also need an AMD module loader like [RequireJS](http://requirejs.org/), [Almond](https://github.com/jrburke/almond) or [curl](https://github.com/cujojs/curl) to load Chaplin and lazy-module application modules
 
-## Downloading Chaplin
+## Download Chaplin
 
+### Using bower
+1. Install the Node package for the Bower package manager.
+
+   ```
+   sudo npm install -g bower
+   ```
+
+2. Install chaplin via bower.
+
+   ```sh
+   bower install chaplin
+   ```
+
+   Specific versions may be requested as follows:
+
+   ```sh
+   bower install chaplin#0.6.0
+   ```
+
+   This will also download the required version of backbone but will _not_ 
+   download the required DOM manipulation or utility libraries. These can be 
+   installed separately via `bower install underscore`, `bower install jquery`, 
+   `bower install lodash`, etc.
+
+### Manually
 [Download the latest release on chaplinjs.org](http://chaplinjs.org/#downloads). See below on how to compile from source manually.
 
 ## Building Chaplin
@@ -92,7 +117,8 @@ Our build script compiles the CoffeeScripts and bundles them into one file. To r
    npm install shelljs
    ```
 
-5. Start the build:
+5. Change into the Chaplin root directory.
+6. Start the build.
 
    ```
    cake build
@@ -125,25 +151,35 @@ How to run the tests:
    ```
 
    On Windows, you can omit the `sudo` command at the beginning.
-   
+
 4. Install the Node package for the Bower package manager.
 
    ```
-   sudo npm install bower -g
+   sudo npm install -g bower
    ```
 
 5. Change into the Chaplin root directory.
-6. Run `bower install` to download all third-party libraries the tests are using (Backbone, jQuery, Mocha etc.).
-7. Run `cake test` to compile the CoffeeScripts to JavaScripts.
-8. Open the test runner `test/index.html` in a browser.
+6. Use Bower to download all third-party libraries the tests are using (Backbone, jQuery, Mocha etc.).
 
-## Boilerplate
+   ```
+   bower install
+   ```
 
-[Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a base application project for Chaplin. You can use it freely as a skeleton for your chaplin project.
+7. Compile the CoffeeScripts to JavaScripts.
 
-If you’re not a CoffeeScript user, there’s also a plain JavaScript boilerplate: [Chaplin Boilerplate-Plain](https://github.com/chaplinjs/chaplin-boilerplate-plain)
+   ```
+   cake test
+   ```
 
-[Boilerplate Rails Application with Backbone, Chaplin and Require.js](https://github.com/chaplinjs/chaplin-rails)
+9. Finally, open the test runner `test/index.html` in a browser.
+
+## Boilerplates
+
+Chaplin needs a simple skeleton to start up and configure the core modules. We provides several boilerplates to make the start easier.
+
+[Chaplin Boilerplate](https://github.com/chaplinjs/chaplin-boilerplate) is a “Hello world” example project using Chaplin. If you’re not a CoffeeScript user, there’s also a [plain JavaScript boilerplate](https://github.com/chaplinjs/chaplin-boilerplate-plain).
+
+For Ruby on Rails users, we’ve compiled a [Boilerplate Rails Application with Backbone, Chaplin and Require.js](https://github.com/chaplinjs/chaplin-rails).
 
 ### Brunch with Chaplin
 
