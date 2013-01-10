@@ -208,10 +208,9 @@ define [
       # whole prototype chain for matching regions. Regions registered by the
       # more-derived class overwrites the region registered by the less-derived
       # class.
-      prototypeChain = utils.getPrototypeChain instance
-      for prototype in prototypeChain.reverse()
+      for version in utils.getAllPropertyVersions instance, 'regions'
         # Iterate over each declared region and its selector.
-        for selector, name of prototype.regions
+        for selector, name of version
           @registerRegion instance, name, selector
 
     # Handler for `!region:unregister`.
