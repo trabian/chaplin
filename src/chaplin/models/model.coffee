@@ -55,7 +55,7 @@ serializeModelAttributes = (model, currentModel, modelStack) ->
 
 
 # Abstraction that adds some useful functionality to backbone model.
-module.exports = class Model extends Backbone.Model
+module.exports = class Model extends Backbone.RelationalModel
   # Mixin an EventBroker.
   _(@prototype).extend EventBroker
 
